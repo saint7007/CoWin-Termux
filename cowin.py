@@ -23,7 +23,7 @@ def clear_screen(): os.system("clear")
 
 class CoWinBook():
 
-    def __init__(self,mobile_no,pincode,age,dose):
+    def __init__(self,mobile_no,pincode,age,dose, date):
         self.mobile_no = str(mobile_no)
         self.pincode = pincode # Area Pincode
         self.center_id = []  # Selected Vaccination Centers
@@ -39,6 +39,8 @@ class CoWinBook():
 
         # User Age 18 or 45
         self.age =  age
+
+        self.date = date
 
         # Request Session
         self.session =  requests.Session() 
@@ -195,7 +197,7 @@ class CoWinBook():
                 
                 vaccine_name = session.get('vaccine')
 
-                if session.get('min_age_limit') == self.age and capacity > 1 and center.get('center_id') in  self.center_id:
+                if session.get('min_age_limit') == self.age and session.get('date')==self.date and capacity > 1 and center.get('center_id') in  self.center_id:
                     MSG = f'💉 {capacity} #{vaccine_name} / {session_date} / {center_name} 📍{self.pincode}'
 
                     # Send Notification via Termux:API App
@@ -387,7 +389,7 @@ class CoWinBook():
         self.user_id = USER_ID
 
  
-def main(mobile_no,pincode, age = 18,dose = 1,time = 30,fast = None):
+def main(mobile_no,pincode, age = 18,dose = 1,time = 30,fast = None, date=None):
 
     # Correct Age
     age =  18 if age < 45 else 45
@@ -396,7 +398,7 @@ def main(mobile_no,pincode, age = 18,dose = 1,time = 30,fast = None):
     time = 30 if time > 30 else time
 
     global cowin
-    cowin = CoWinBook(mobile_no,pincode,age,dose)
+    cowin = CoWinBook(mobile_no,pincode,age,dose,date)
 
 
     try:
