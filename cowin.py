@@ -23,7 +23,7 @@ def clear_screen(): os.system("clear")
 
 class CoWinBook():
 
-    def __init__(self,mobile_no,pincode,age,dose, date):
+    def __init__(self,mobile_no,pincode,age,dose, bookingdate):
         self.mobile_no = str(mobile_no)
         self.pincode = pincode # Area Pincode
         self.center_id = []  # Selected Vaccination Centers
@@ -40,7 +40,7 @@ class CoWinBook():
         # User Age 18 or 45
         self.age =  age
 
-        self.date = date
+        self.bookingdate = bookingdate
 
         # Request Session
         self.session =  requests.Session() 
@@ -171,6 +171,7 @@ class CoWinBook():
     # Request for Current Slot Deatails ( Private Request )
     def request_slot(self):
         todayDate = datetime.now().strftime("%d-%m-%Y")
+        ##todayDate = self.bookingdate
         response = self.session.get(f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={self.pincode}&date={todayDate}')
 
         if response.ok:
@@ -197,7 +198,7 @@ class CoWinBook():
                 
                 vaccine_name = session.get('vaccine')
 
-                if session.get('min_age_limit') == self.age and session.get('date')==self.date and capacity > 1 and center.get('center_id') in  self.center_id:
+                if session.get('min_age_limit') == self.age and session.get('date')==self.bookingdate and capacity > 1 and center.get('center_id') in  self.center_id:
                     MSG = f'💉 {capacity} #{vaccine_name} / {session_date} / {center_name} 📍{self.pincode}'
 
                     # Send Notification via Termux:API App
@@ -389,7 +390,7 @@ class CoWinBook():
         self.user_id = USER_ID
 
  
-def main(mobile_no,pincode, age = 18,dose = 1,time = 30,fast = None, date=None):
+def main(mobile_no,pincode, age = 18,dose = 1,time = 30,fast = None, bookingdate=None):
 
     # Correct Age
     age =  18 if age < 45 else 45
@@ -398,7 +399,7 @@ def main(mobile_no,pincode, age = 18,dose = 1,time = 30,fast = None, date=None):
     time = 30 if time > 30 else time
 
     global cowin
-    cowin = CoWinBook(mobile_no,pincode,age,dose,date)
+    cowin = CoWinBook(mobile_no,pincode,age,dose,bookingdate)
 
 
     try:
